@@ -1,0 +1,110 @@
+version: '3.8'
+
+services:
+  # Authentication Service
+  auth-service:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - AUTH_SERVICE_PORT=8080
+      - JWT_SECRET=your-super-secret-jwt-key
+      - REFRESH_TOKEN_TTL=720
+      - ACCESS_TOKEN_TTL=15
+      - DATABASE_URL=postgresql://user:password@db:5432/auth_db
+    depends_on:
+      - db
+    networks:
+      - cryptofortress-network
+
+  # Encryption Service
+  encryption-service:
+    build:
+      context: ./encryption
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - ENCRYPTION_SERVICE_PORT=8081
+      - DATABASE_URL=postgresql://user:password@db:5432/encryption_db
+      - AES_KEY_SIZE=256
+      - RSA_KEY_SIZE=2048
+      - DEFAULT_ALGORITHM=AES-256-GCM
+    depends_on:
+      - db
+    networks:
+      - cryptofortress-network
+
+  # Key Management Service
+  keymgmt-service:
+    build:
+      context: ./keymgmt
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      - KEYMGMT_SERVICE_PORT=8082
+      - DATABASE_URL=postgresql://user:password@db:5432/keymgmt_db
+      - KEY_ROTATION_PERIOD=90
+      - SHAMIR_THRESHOLD=2
+      - SHAMIR_SHARES=3
+      - REPLICATION_ENABLED=false
+    depends_on:
+      - db
+    networks:
+      - cryptofortress-network
+
+  # Audit & Compliance Service
+  audit-service:
+    build:
+      context: ./audit
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    environment:
+      - AUDIT_SERVICE_PORT=8083
+      - DATABASE_URL=postgresql://user:password@db:5432/audit_db
+      - AUDIT_LOG_RETENTION=365
+      - COMPLIANCE_STANDARDS=GDPR,HIPAA,SOC2
+      - SIEM_ENABLED=false
+      - IMMUTABLE_AUDIT_TRAILS=true
+    depends_on:
+      - db
+    networks:
+      - cryptofortress-network
+
+  # PostgreSQL Database
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=cryptofortress
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - cryptofortress-network
+
+  # pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@example.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - cryptofortress-network
+
+networks:
+  cryptofortress-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

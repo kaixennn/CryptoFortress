@@ -1,0 +1,13 @@
+[package]
+name = "performance-opt"
+version = "0.1.0"
+edition = "2021"
+authors = ["CryptoFortress Team"]
+description = "Performance Optimizations for CryptoFortress"
+license = "MIT"
+
+[dependencies]
+crypto-engine = { path = "../crypto-engine" }
+rayon = "1.7"
+
+[dev-dependencies]

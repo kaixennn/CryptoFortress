@@ -1,0 +1,42 @@
+[package]
+name = "crypto-engine"
+version = "0.1.0"
+edition = "2021"
+authors = ["CryptoFortress Team"]
+description = "Secure Crypto Core for CryptoFortress"
+license = "MIT"
+
+[dependencies]
+# Cryptography
+aes-gcm = { version = "0.10", optional = true }
+chacha20poly1305 = { version = "0.10", optional = true }
+rsa = { version = "0.9", optional = true }
+sha2 = "0.10"
+hmac = "0.12"
+pbkdf2 = "0.12"
+rand = "0.8"
+zeroize = "1.6"
+
+# Async runtime
+tokio = { version = "1.0", features = ["full"], optional = true }
+
+# Error handling
+thiserror = "1.0"
+
+# Serialization (for FFI)
+serde = { version = "1.0", features = ["derive"], optional = true }
+
+[features]
+default = ["serde"]
+ffi = ["serde"]
+async = ["tokio"]
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+
+[dev-dependencies]
+criterion = "0.5"
+
+[[bench]]
+name = "crypto_bench"
+harness = false

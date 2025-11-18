@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # Threat Detection Engine
+  threat-detection:
+    build:
+      context: ./threat_detection
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+    networks:
+      - ai-network
+
+  # Security Recommender
+  security-recommender:
+    build:
+      context: ./security_recommender
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    environment:
+      - FLASK_ENV=production
+    networks:
+      - ai-network
+
+  # Risk Assessment Module
+  risk-assessment:
+    build:
+      context: ./risk_assessment
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5002"
+    environment:
+      - FLASK_ENV=production
+    networks:
+      - ai-network
+
+networks:
+  ai-network:
+    driver: bridge

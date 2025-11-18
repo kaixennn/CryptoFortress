@@ -1,0 +1,15 @@
+[package]
+name = "ffi-bridge"
+version = "0.1.0"
+edition = "2021"
+authors = ["CryptoFortress Team"]
+description = "FFI Bridge for CryptoFortress"
+license = "MIT"
+
+[dependencies]
+crypto-engine = { path = "../crypto-engine", features = ["ffi"] }
+
+[lib]
+crate-type = ["cdylib"]
+
+[dev-dependencies]
